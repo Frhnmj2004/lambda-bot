@@ -1,0 +1,50 @@
+syntax = "proto3";
+
+package proto;
+
+option go_package = "github.com/Frhnmj2004/lambda-bot/pkg/protogen;protogen";
+
+// To generate Go code, run:
+// protoc --go_out=../pkg/protogen --go-grpc_out=../pkg/protogen proto/lambda.proto
+
+service AudioProcessor {
+  rpc TranscribeAudio(TranscriptionRequest) returns (TranscriptionResponse);
+}
+
+service TextSummarizer {
+  rpc SummarizeText(SummarizationRequest) returns (SummarizationResponse);
+}
+
+service Orchestrator {
+  rpc ProcessVoiceMessage(ProcessRequest) returns (ProcessResponse);
+}
+
+message TranscriptionRequest {
+  string audio_file_path = 1;
+  string message_id = 2;
+}
+
+message TranscriptionResponse {
+  string transcript = 1;
+  string message_id = 2;
+}
+
+message SummarizationRequest {
+  string transcript = 1;
+  string message_id = 2;
+}
+
+message SummarizationResponse {
+  string summary = 1;
+  string message_id = 2;
+}
+
+message ProcessRequest {
+  string sender_id = 1;
+  string media_id = 2;
+  string audio_file_path = 3;
+}
+
+message ProcessResponse {
+  string summary = 1;
+} 

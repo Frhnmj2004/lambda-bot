@@ -1,0 +1,58 @@
+version: '3.9'
+
+services:
+  whatsapp-gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile.gateway
+    ports:
+      - "8080:8080"
+    environment:
+      - PORT=8080
+      - WHATSAPP_VERIFY_TOKEN=${WHATSAPP_VERIFY_TOKEN}
+      - WHATSAPP_APP_SECRET=${WHATSAPP_APP_SECRET}
+      - WHATSAPP_API_TOKEN=${WHATSAPP_API_TOKEN}
+      - WHATSAPP_PHONE_NUMBER_ID=${WHATSAPP_PHONE_NUMBER_ID}
+      - ORCHESTRATOR_GRPC_ADDR=orchestrator:50053
+    networks:
+      - lambda-net
+    depends_on:
+      - orchestrator
+
+  audio-processor:
+    build:
+      context: .
+      dockerfile: Dockerfile.audio-processor
+    environment:
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+    networks:
+      - lambda-net
+    expose:
+      - "50051"
+
+  text-summarizer:
+    build:
+      context: .
+      dockerfile: Dockerfile.text-summarizer
+    environment:
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+    networks:
+      - lambda-net
+    expose:
+      - "50052"
+
+  orchestrator:
+    build:
+      context: .
+      dockerfile: Dockerfile.orchestrator
+    networks:
+      - lambda-net
+    expose:
+      - "50053"
+    depends_on:
+      - audio-processor
+      - text-summarizer
+
+networks:
+  lambda-net:
+    driver: bridge 
