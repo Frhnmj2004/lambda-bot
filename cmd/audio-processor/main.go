@@ -30,7 +30,7 @@ func (s *audioProcessorServer) TranscribeAudio(ctx context.Context, req *protoge
 	defer os.Remove(audioFilePath) // Clean up the temp file
 
 	prompt := genai.Text("Transcribe this voice message accurately. Preserve the conversational nature.")
-	audioPart := genai.Blob{MimeType: "audio/ogg", Data: audioData}
+	audioPart := genai.Blob{MIMEType: "audio/ogg", Data: audioData}
 
 	resp, err := s.geminiModel.GenerateContent(ctx, audioPart, prompt)
 	if err != nil {
